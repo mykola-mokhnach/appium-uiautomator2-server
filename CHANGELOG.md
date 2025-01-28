@@ -1,3 +1,9 @@
+## [7.2.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.1.11...v7.2.0) (2025-01-28)
+
+### Features
+
+* add more fields from AccessibilityNodeInfo ([#682](https://github.com/appium/appium-uiautomator2-server/issues/682)) ([ef9b24f](https://github.com/appium/appium-uiautomator2-server/commit/ef9b24fb0ef7449829497e06ff4bb7d7c6ef5808))
+
 ## [7.1.11](https://github.com/appium/appium-uiautomator2-server/compare/v7.1.10...v7.1.11) (2025-01-07)
 
 ### Miscellaneous Chores
