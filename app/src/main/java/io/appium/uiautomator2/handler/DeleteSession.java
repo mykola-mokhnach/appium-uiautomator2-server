@@ -16,6 +16,9 @@
 
 package io.appium.uiautomator2.handler;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import java.util.Objects;
 
 import io.appium.uiautomator2.common.exceptions.NoSuchDriverException;
@@ -43,7 +46,16 @@ public class DeleteSession extends SafeRequestHandler {
         }
         ScheduledActionsManager.getInstance().clear();
         NotificationListener.getInstance().stop();
-        ServerInstrumentation.getInstance().stopServer();
+        // We'd like to shutdown the (HTTP) server after the delete
+        // session response is delivered to the client
+        new Handler(Looper.getMainLooper()).postDelayed(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        ServerInstrumentation.getInstance().stop();
+                    }
+                }, 100
+        );
         return new AppiumResponse(sessionId);
     }
 }
