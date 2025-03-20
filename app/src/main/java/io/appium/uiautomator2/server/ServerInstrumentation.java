@@ -25,10 +25,10 @@ import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemClock;
 
+import androidx.annotation.Nullable;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.Configurator;
 
-import io.appium.uiautomator2.common.exceptions.SessionRemovedException;
 import io.appium.uiautomator2.model.settings.Settings;
 import io.appium.uiautomator2.model.settings.ShutdownOnPowerDisconnect;
 import io.appium.uiautomator2.server.mjpeg.MjpegScreenshotServer;
@@ -36,9 +36,9 @@ import io.appium.uiautomator2.utils.Logger;
 
 import static android.content.Intent.ACTION_POWER_DISCONNECTED;
 import static androidx.test.core.app.ApplicationProvider.getApplicationContext;
-import static io.appium.uiautomator2.server.ServerConfig.getMjpegServerPort;
-import static io.appium.uiautomator2.server.ServerConfig.getServerPort;
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
+
+import java.util.concurrent.CountDownLatch;
 
 public class ServerInstrumentation {
     private static final int MIN_PORT = 1024;
@@ -49,90 +49,31 @@ public class ServerInstrumentation {
     private static ServerInstrumentation instance;
 
     private final PowerManager powerManager;
-    private final int serverPort;
+    private final int httpServerPort;
     private final int mjpegServerPort;
-    private HttpdThread serverThread;
+    private HttpdThread httpServerThread;
     private MjpegScreenshotServer mjpegScreenshotServerThread;
     private PowerManager.WakeLock wakeLock;
     private long wakeLockAcquireTimestampMs = 0;
     private long wakeLockTimeoutMs = 0;
-    private boolean isServerStopped;
+    private CountDownLatch shutdownLatch;
 
-    private void setAccessibilityServiceState() {
-        String disableSuppressAccessibilityService = InstrumentationRegistry.getArguments().getString("DISABLE_SUPPRESS_ACCESSIBILITY_SERVICES");
-        if (disableSuppressAccessibilityService == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            return;
-        }
-
-        boolean shouldDisableSuppressAccessibilityService = Boolean.parseBoolean(disableSuppressAccessibilityService);
-        if (shouldDisableSuppressAccessibilityService) {
-            Configurator.getInstance().setUiAutomationFlags(
-                    UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES);
-        } else {
-            // We can disable UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
-            // only when we set the value as zero
-            Configurator.getInstance().setUiAutomationFlags(0);
-        }
-    }
-
-    private ServerInstrumentation(Context context, int serverPort, int mjpegServerPort) {
-        if (isValidPort(serverPort)) {
-            this.serverPort = serverPort;
-        } else {
-            Logger.warn(String.format(
-                "The server port is out of valid range [%s;%s]: %s -- using default: %s",
-                MIN_PORT,
-                MAX_PORT,
-                serverPort,
-                ServerConfig.DEFAULT_SERVER_PORT
-            ));
-            this.serverPort = ServerConfig.DEFAULT_SERVER_PORT;
-        }
-
-        if (isValidPort(mjpegServerPort)) {
-            this.mjpegServerPort = mjpegServerPort;
-        } else {
-            Logger.warn(String.format(
-                "The MJPEG server port is out of valid range [%s;%s]: %s -- using default: %s",
-                MIN_PORT,
-                MAX_PORT,
-                mjpegServerPort,
-                ServerConfig.DEFAULT_MJPEG_SERVER_PORT
-            ));
-            this.mjpegServerPort = ServerConfig.DEFAULT_MJPEG_SERVER_PORT;
-        }
-
-        this.powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-
+    private ServerInstrumentation() {
+        this.httpServerPort = requireValidPort(
+                ServerConfig.getServerPort(), ServerConfig.DEFAULT_SERVER_PORT, "server"
+        );
+        this.mjpegServerPort = requireValidPort(
+                ServerConfig.getMjpegServerPort(), ServerConfig.DEFAULT_MJPEG_SERVER_PORT, "MJPEG"
+        );
+        this.powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
         setAccessibilityServiceState();
     }
 
     public static synchronized ServerInstrumentation getInstance() {
         if (instance == null) {
-            instance = new ServerInstrumentation(
-                getApplicationContext(),
-                getServerPort(),
-                getMjpegServerPort()
-            );
+            instance = new ServerInstrumentation();
         }
         return instance;
-    }
-
-    private void releaseWakeLock() {
-        Logger.debug(String.format(
-                "Got request to release the wake lock (current value %s, timeout %s)",
-                wakeLock, wakeLockTimeoutMs));
-
-        if (wakeLock == null) {
-            return;
-        }
-
-        try {
-            wakeLock.release();
-        } catch (Exception e) {/* ignore */}
-        wakeLock = null;
-        wakeLockAcquireTimestampMs = 0;
-        wakeLockTimeoutMs = 0;
     }
 
     public long getWakeLockTimeout() {
@@ -147,7 +88,7 @@ public class ServerInstrumentation {
 
         releaseWakeLock();
 
-        if (msTimeout <= 0) {
+        if (msTimeout <= 0 || powerManager == null) {
             return;
         }
 
@@ -173,90 +114,46 @@ public class ServerInstrumentation {
         }
     }
 
-    public boolean isServerStopped() {
-        return isServerStopped;
-    }
+    public void stop() {
+        synchronized (WAKE_LOCK_TAG) {
+            if (shutdownLatch == null) {
+                return;
+            }
 
-    private boolean isValidPort(int port) {
-        return port >= MIN_PORT && port <= MAX_PORT;
-    }
-
-    public void stopServer() {
-        try {
-            releaseWakeLock();
-            stopServerThread();
-        } finally {
-            instance = null;
+            try {
+                Logger.info("Stopping ServerInstrumentation");
+                stopMjpegServer();
+                releaseWakeLock();
+                stopHttpServer();
+                Logger.info("ServerInstrumentation stopped");
+            } finally {
+                if (null != shutdownLatch) {
+                    shutdownLatch.countDown();
+                    shutdownLatch = null;
+                }
+            }
         }
     }
 
-    public void startServer() throws SessionRemovedException {
-        if (serverThread != null && serverThread.isAlive()) {
-            return;
+    public void start() {
+        synchronized (WAKE_LOCK_TAG) {
+            if (shutdownLatch != null) {
+                return;
+            }
+
+            Logger.info("Starting ServerInstrumentation");
+            shutdownLatch = new CountDownLatch(1);
+            acquireWakeLock(MAX_TEST_DURATION);
+            startHttpServer();
+            startMjpegServer();
+            //client to wait for io.appium.uiautomator2.server to up
+            Logger.info("ServerInstrumentation started");
         }
-
-        if (serverThread == null && isServerStopped) {
-            throw new SessionRemovedException("Delete Session has been invoked");
-        }
-
-        if (serverThread != null) {
-            Logger.error("Stopping UiAutomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server");
-            stopServer();
-        }
-
-        serverThread = new HttpdThread(this.serverPort);
-        serverThread.start();
-
-        //client to wait for io.appium.uiautomator2.server to up
-        Logger.info("io.appium.uiautomator2.server started:");
     }
 
-    private void stopServerThread() {
-        if (serverThread == null) {
-            return;
-        }
-
-        if (!serverThread.isAlive()) {
-            serverThread = null;
-            return;
-        }
-
-        Logger.info("Stopping uiautomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server");
-        serverThread.stopLooping();
-        serverThread.interrupt();
-        try {
-            serverThread.join();
-        } catch (InterruptedException ignored) {
-        }
-        serverThread = null;
-        isServerStopped = true;
-    }
-
-    public void startMjpegServer() {
-        if (mjpegScreenshotServerThread != null && mjpegScreenshotServerThread.isAlive()) {
-            return;
-        }
-
-        Logger.info("Starting MJPEG Server");
-        mjpegScreenshotServerThread = new MjpegScreenshotServer(mjpegServerPort);
-        mjpegScreenshotServerThread.start();
-        Logger.info("MJPEG Server started");
-    }
-
-    public void stopMjpegServer() {
-        if (mjpegScreenshotServerThread == null || !mjpegScreenshotServerThread.isAlive()) {
-            return;
-        }
-
-        Logger.info("Stopping MJPEG Server");
-        mjpegScreenshotServerThread.interrupt();
-        try {
-            mjpegScreenshotServerThread.join();
-        } catch (InterruptedException ignored) {
-            // swallow
-        }
-        mjpegScreenshotServerThread = null;
-        Logger.info("MJPEG Server stoppped");
+    @Nullable
+    public CountDownLatch getShutdownLatch() {
+        return shutdownLatch;
     }
 
     public static class PowerConnectionReceiver extends BroadcastReceiver {
@@ -281,12 +178,120 @@ public class ServerInstrumentation {
             }
 
             Logger.info("The device was disconnected from power source. Shutting down the server.");
-            getInstance().stopMjpegServer();
-            getInstance().stopServer();
+            getInstance().stop();
         }
     }
 
-    private class HttpdThread extends Thread {
+    private void startHttpServer() {
+        if (httpServerThread != null) {
+            return;
+        }
+
+        httpServerThread = new HttpdThread(this.httpServerPort);
+        httpServerThread.start();
+    }
+
+    private void stopHttpServer() {
+        try {
+            if (httpServerThread == null || !httpServerThread.isAlive()) {
+                return;
+            }
+
+            httpServerThread.interrupt();
+            try {
+                httpServerThread.join();
+            } catch (InterruptedException ignored) {
+            }
+        } finally {
+            httpServerThread = null;
+        }
+    }
+
+    private static int requireValidPort(int port, int defaultPort, String entityName) {
+        if (port >= MIN_PORT && port <= MAX_PORT) {
+            return port;
+        }
+
+        Logger.warn(String.format(
+                "The %s port is out of valid range [%s;%s]: %s -- using default: %s",
+                entityName,
+                MIN_PORT,
+                MAX_PORT,
+                port,
+                defaultPort
+        ));
+        return defaultPort;
+    }
+
+    private void releaseWakeLock() {
+        Logger.debug(String.format(
+                "Got request to release the wake lock (current value %s, timeout %s)",
+                wakeLock, wakeLockTimeoutMs));
+
+        if (wakeLock == null) {
+            return;
+        }
+
+        try {
+            wakeLock.release();
+        } catch (Exception e) {
+            /* ignore */
+        } finally {
+            wakeLock = null;
+            wakeLockAcquireTimestampMs = 0;
+            wakeLockTimeoutMs = 0;
+        }
+    }
+
+    private void startMjpegServer() {
+        if (mjpegScreenshotServerThread != null && mjpegScreenshotServerThread.isAlive()) {
+            return;
+        }
+
+        Logger.info("Starting MJPEG Server");
+        mjpegScreenshotServerThread = new MjpegScreenshotServer(mjpegServerPort);
+        mjpegScreenshotServerThread.start();
+        Logger.info("MJPEG Server started");
+    }
+
+    private void stopMjpegServer() {
+        try {
+            if (mjpegScreenshotServerThread == null || !mjpegScreenshotServerThread.isAlive()) {
+                return;
+            }
+
+            Logger.info("Stopping MJPEG Server");
+            mjpegScreenshotServerThread.interrupt();
+            try {
+                mjpegScreenshotServerThread.join();
+            } catch (InterruptedException ignored) {
+                // swallow
+            }
+            Logger.info("MJPEG Server stopped");
+        } finally {
+            mjpegScreenshotServerThread = null;
+        }
+    }
+
+    private void setAccessibilityServiceState() {
+        String disableSuppressAccessibilityService = InstrumentationRegistry.getArguments()
+                .getString("DISABLE_SUPPRESS_ACCESSIBILITY_SERVICES");
+        if (disableSuppressAccessibilityService == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return;
+        }
+
+        boolean shouldDisableSuppressAccessibilityService = Boolean.parseBoolean(disableSuppressAccessibilityService);
+        if (shouldDisableSuppressAccessibilityService) {
+            Configurator.getInstance().setUiAutomationFlags(
+                    UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES);
+        } else {
+            // We can disable UiAutomation.FLAG_DONT_SUPPRESS_ACCESSIBILITY_SERVICES
+            // only when we set the value as zero
+            Configurator.getInstance().setUiAutomationFlags(0);
+        }
+    }
+
+    private static class HttpdThread extends Thread {
         private final AndroidServer server;
         private Looper looper;
 
@@ -299,33 +304,19 @@ public class ServerInstrumentation {
         public void run() {
             Looper.prepare();
             looper = Looper.myLooper();
-            startServer();
+            server.start();
             Looper.loop();
         }
 
         @Override
         public void interrupt() {
+            if (looper != null) {
+                looper.quit();
+                looper = null;
+            }
+
             server.stop();
             super.interrupt();
-        }
-
-        public AndroidServer getServer() {
-            return server;
-        }
-
-        private void startServer() {
-            acquireWakeLock(MAX_TEST_DURATION);
-
-            server.start();
-
-            Logger.info("Started UiAutomator2 io.appium.uiautomator2.http io.appium.uiautomator2.server on port " + server.getPort());
-        }
-
-        public void stopLooping() {
-            if (looper == null) {
-                return;
-            }
-            looper.quit();
         }
     }
 }

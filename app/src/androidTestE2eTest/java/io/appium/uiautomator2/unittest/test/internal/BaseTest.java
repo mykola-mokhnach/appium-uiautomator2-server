@@ -15,8 +15,6 @@
  */
 package io.appium.uiautomator2.unittest.test.internal;
 
-import android.content.Context;
-
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.uiautomator.Configurator;
@@ -53,8 +51,6 @@ import static org.junit.Assert.assertNotNull;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(AndroidJUnit4.class)
 public abstract class BaseTest {
-    protected static ServerInstrumentation serverInstrumentation;
-    private static Context ctx;
 
     @Rule
     public TestWatcher watcher = new TestWatcher();
@@ -64,14 +60,8 @@ public abstract class BaseTest {
      */
     @BeforeClass
     public static void startServer() throws JSONException, IOException {
-        if (serverInstrumentation != null) {
-            return;
-        }
         assertNotNull(getUiDevice());
-        ctx = InstrumentationRegistry.getInstrumentation().getTargetContext();
-        serverInstrumentation = ServerInstrumentation.getInstance();
-        Logger.info("Starting Server");
-        serverInstrumentation.startServer();
+        ServerInstrumentation.getInstance().start();
         Client.waitForNettyStatus(NettyStatus.ONLINE);
         JSONObject responseValue = createSession().getValue();
         WebDriverSession.getInstance().setId(responseValue.getString("sessionId"));
@@ -85,12 +75,7 @@ public abstract class BaseTest {
     public static void stopSever() {
         deleteSession();
         WebDriverSession.getInstance().setId(null);
-        if (serverInstrumentation == null) {
-            return;
-        }
-        serverInstrumentation.stopServer();
         Client.waitForNettyStatus(NettyStatus.OFFLINE);
-        serverInstrumentation = null;
     }
 
     @Before
@@ -120,7 +105,9 @@ public abstract class BaseTest {
     }
 
     protected void startActivity(String activity) throws JSONException {
-        TestUtils.startActivity(ctx, activity);
+        TestUtils.startActivity(
+                InstrumentationRegistry.getInstrumentation().getTargetContext(), activity
+        );
     }
 
     protected void clickAndWaitForStaleness(String elementId) throws JSONException {

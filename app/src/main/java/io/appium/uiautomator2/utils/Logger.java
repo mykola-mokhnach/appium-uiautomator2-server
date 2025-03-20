@@ -21,13 +21,11 @@ public class Logger {
 
     private static String getString(Object... args) {
         StringBuilder content = new StringBuilder();
-
         for (Object arg : args) {
             if (arg != null) {
-                content.append(arg.toString());
+                content.append(arg);
             }
         }
-
         return content.toString();
     }
 
