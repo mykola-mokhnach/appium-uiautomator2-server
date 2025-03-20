@@ -1,3 +1,9 @@
+## [7.3.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.2.5...v7.3.0) (2025-03-20)
+
+### Features
+
+* Replace the deprecated AndroidJUnit4 class in the runner ([#690](https://github.com/appium/appium-uiautomator2-server/issues/690)) ([080e341](https://github.com/appium/appium-uiautomator2-server/commit/080e34131eba0c13a02313f187c8b56855199417))
+
 ## [7.2.5](https://github.com/appium/appium-uiautomator2-server/compare/v7.2.4...v7.2.5) (2025-03-06)
 
 ### Miscellaneous Chores
