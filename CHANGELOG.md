@@ -1,3 +1,9 @@
+## [7.3.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.3.0...v7.3.1) (2025-03-26)
+
+### Miscellaneous Chores
+
+* **deps:** bump com.android.tools.build:gradle from 8.9.0 to 8.9.1 in /app ([#691](https://github.com/appium/appium-uiautomator2-server/issues/691)) ([b11ee41](https://github.com/appium/appium-uiautomator2-server/commit/b11ee4146e300cef84ff1d28a6fd2cb725ff989c))
+
 ## [7.3.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.2.5...v7.3.0) (2025-03-20)
 
 ### Features
