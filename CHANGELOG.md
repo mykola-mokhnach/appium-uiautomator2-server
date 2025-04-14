@@ -1,3 +1,9 @@
+## [7.4.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.4.0...v7.4.1) (2025-04-14)
+
+### Miscellaneous Chores
+
+* **deps:** bump com.google.code.gson:gson in /app ([#697](https://github.com/appium/appium-uiautomator2-server/issues/697)) ([abad393](https://github.com/appium/appium-uiautomator2-server/commit/abad39303313f3f390564fe18d3d1b10c2bea4f4))
+
 ## [7.4.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.3.1...v7.4.0) (2025-04-07)
 
 ### Features
