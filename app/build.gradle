@@ -101,7 +101,7 @@ dependencies {
     implementation 'xerces:xercesImpl:2.12.2'
     implementation 'com.github.vbmacher:java-cup-runtime:11b-20160615-3'
     //noinspection GradleDependency
-    implementation 'com.ibm.icu:icu4j:60.2'
+    implementation 'com.ibm.icu:icu4j:74.2'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'androidx.test.ext:junit:1.2.1'
     testImplementation 'org.json:json:20250107'
