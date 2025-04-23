@@ -1,3 +1,9 @@
+## [7.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.4.1...v7.5.0) (2025-04-23)
+
+### Features
+
+* **build:** migrate Gradle build files from Groovy DSL (build.gradle) to Kotlin DSL (build.gradle.kts) ([#698](https://github.com/appium/appium-uiautomator2-server/issues/698)) ([a6e15c3](https://github.com/appium/appium-uiautomator2-server/commit/a6e15c3073ead1d2bb98666ac4139e41be5fb10a))
+
 ## [7.4.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.4.0...v7.4.1) (2025-04-14)
 
 ### Miscellaneous Chores
