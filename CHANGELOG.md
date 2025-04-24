@@ -1,3 +1,9 @@
+## [7.5.2](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.1...v7.5.2) (2025-04-24)
+
+### Miscellaneous Chores
+
+* Only require strict java version in CI env ([#701](https://github.com/appium/appium-uiautomator2-server/issues/701)) ([20b59db](https://github.com/appium/appium-uiautomator2-server/commit/20b59db71aad0e1384d7294b700dad5365b78c24))
+
 ## [7.5.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.0...v7.5.1) (2025-04-24)
 
 ### Miscellaneous Chores
