@@ -1,3 +1,9 @@
+## [7.5.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.0...v7.5.1) (2025-04-24)
+
+### Miscellaneous Chores
+
+* **deps:** bump io.netty:netty-all from 4.0.41.Final to 4.1.42.Final ([#700](https://github.com/appium/appium-uiautomator2-server/issues/700)) ([a4da1c7](https://github.com/appium/appium-uiautomator2-server/commit/a4da1c78c98cbaf39a9acf920b3410a2cd2c41f5))
+
 ## [7.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.4.1...v7.5.0) (2025-04-23)
 
 ### Features
