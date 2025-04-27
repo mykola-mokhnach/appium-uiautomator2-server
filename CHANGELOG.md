@@ -1,3 +1,9 @@
+## [7.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.2...v7.6.0) (2025-04-27)
+
+### Features
+
+* Add server build info to the /status API ([#702](https://github.com/appium/appium-uiautomator2-server/issues/702)) ([e140bba](https://github.com/appium/appium-uiautomator2-server/commit/e140bba2b03ed69860983c4747d3a58cb904a878))
+
 ## [7.5.2](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.1...v7.5.2) (2025-04-24)
 
 ### Miscellaneous Chores
