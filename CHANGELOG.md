@@ -1,3 +1,9 @@
+## [7.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.0...v7.6.1) (2025-05-21)
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump conventional-changelog-conventionalcommits ([#704](https://github.com/appium/appium-uiautomator2-server/issues/704)) ([ce090ad](https://github.com/appium/appium-uiautomator2-server/commit/ce090ad6014b20534ed38f56ae82d1bda248ffd9))
+
 ## [7.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.5.2...v7.6.0) (2025-04-27)
 
 ### Features
