@@ -1,3 +1,9 @@
+## [7.6.2](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.1...v7.6.2) (2025-06-02)
+
+### Miscellaneous Chores
+
+* fix typos ([#706](https://github.com/appium/appium-uiautomator2-server/issues/706)) ([4ce6a1d](https://github.com/appium/appium-uiautomator2-server/commit/4ce6a1da88b2be1a9b4a3dfb75a2b8cdfbfa2f58))
+
 ## [7.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.0...v7.6.1) (2025-05-21)
 
 ### Miscellaneous Chores
