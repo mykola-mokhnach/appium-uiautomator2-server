@@ -1,3 +1,13 @@
+## [7.7.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.2...v7.7.0) (2025-07-22)
+
+### Features
+
+* add tooltip-text and text-has-clickable-span attributes to UI elements ([b75c841](https://github.com/appium/appium-uiautomator2-server/commit/b75c8413b88ef046cfe2deb682f706c3ee4e3cc1))
+
+### Code Refactoring
+
+* remove unused import ([#707](https://github.com/appium/appium-uiautomator2-server/issues/707)) ([4e8d800](https://github.com/appium/appium-uiautomator2-server/commit/4e8d800aecd22e4c86aedb8ec803a400baed582f))
+
 ## [7.6.2](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.1...v7.6.2) (2025-06-02)
 
 ### Miscellaneous Chores
