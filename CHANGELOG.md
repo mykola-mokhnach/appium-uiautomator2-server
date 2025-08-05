@@ -1,3 +1,9 @@
+## [7.7.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.7.0...v7.7.1) (2025-08-05)
+
+### Bug Fixes
+
+* Use getTargetContext to fetch the display service ([#715](https://github.com/appium/appium-uiautomator2-server/issues/715)) ([11e0980](https://github.com/appium/appium-uiautomator2-server/commit/11e0980af9a510ba185d92da603070f2e14f9f04))
+
 ## [7.7.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.6.2...v7.7.0) (2025-07-22)
 
 ### Features
