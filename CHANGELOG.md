@@ -1,3 +1,14 @@
+## [8.0.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.7.1...v8.0.0) (2025-08-16)
+
+### ⚠ BREAKING CHANGES
+
+* Required Node.js version has been bumped to ^20.19.0 || ^22.12.0 || >=24.0.0
+* Required npm version has been bumped to >=10
+
+### Features
+
+* Bump Node.js version ([#716](https://github.com/appium/appium-uiautomator2-server/issues/716)) ([e43fdc6](https://github.com/appium/appium-uiautomator2-server/commit/e43fdc6ae68ae31e01df4e2f80eb1d1550382ecc))
+
 ## [7.7.1](https://github.com/appium/appium-uiautomator2-server/compare/v7.7.0...v7.7.1) (2025-08-05)
 
 ### Bug Fixes
