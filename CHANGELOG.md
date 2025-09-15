@@ -1,3 +1,9 @@
+## [8.1.0](https://github.com/appium/appium-uiautomator2-server/compare/v8.0.0...v8.1.0) (2025-09-15)
+
+### Features
+
+* Add setting to allow certain widget classes to be traversed even if invisible ([#710](https://github.com/appium/appium-uiautomator2-server/issues/710)) ([b2b3778](https://github.com/appium/appium-uiautomator2-server/commit/b2b37783610f161389bb010a6fd710e8566f7804))
+
 ## [8.0.0](https://github.com/appium/appium-uiautomator2-server/compare/v7.7.1...v8.0.0) (2025-08-16)
 
 ### ⚠ BREAKING CHANGES
