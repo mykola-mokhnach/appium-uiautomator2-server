@@ -1,3 +1,9 @@
+## [8.1.1](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.0...v8.1.1) (2025-09-17)
+
+### Bug Fixes
+
+* Prefer LockSupport.parkNanos over Thread.sleep for events injection ([#718](https://github.com/appium/appium-uiautomator2-server/issues/718)) ([6a417de](https://github.com/appium/appium-uiautomator2-server/commit/6a417de9460fbb67cf8c1d99ba814c97c9768c4f))
+
 ## [8.1.0](https://github.com/appium/appium-uiautomator2-server/compare/v8.0.0...v8.1.0) (2025-09-15)
 
 ### Features
