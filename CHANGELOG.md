@@ -1,3 +1,9 @@
+## [8.1.2](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.1...v8.1.2) (2025-10-17)
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump semantic-release from 24.2.9 to 25.0.0 ([#720](https://github.com/appium/appium-uiautomator2-server/issues/720)) ([89cc085](https://github.com/appium/appium-uiautomator2-server/commit/89cc08555a4ed55cc9398431cf3afb52ceb6c2de))
+
 ## [8.1.1](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.0...v8.1.1) (2025-09-17)
 
 ### Bug Fixes
