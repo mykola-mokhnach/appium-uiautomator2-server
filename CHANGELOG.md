@@ -1,3 +1,13 @@
+## [9.0.0](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.2...v9.0.0) (2025-10-24)
+
+### ⚠ BREAKING CHANGES
+
+* The minimum supported Android API level is set to 26 (Oreo 8.0)
+
+### Features
+
+* Bump the minimum supported API level to 26 (Oreo) ([#721](https://github.com/appium/appium-uiautomator2-server/issues/721)) ([edfe426](https://github.com/appium/appium-uiautomator2-server/commit/edfe426abd7506eb2951b04cf3ac074ab70223ec))
+
 ## [8.1.2](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.1...v8.1.2) (2025-10-17)
 
 ### Miscellaneous Chores
