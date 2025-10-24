@@ -1,3 +1,9 @@
+## [9.0.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.0.0...v9.0.1) (2025-10-24)
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump appium-adb from 13.0.11 to 14.0.0 ([#722](https://github.com/appium/appium-uiautomator2-server/issues/722)) ([5180dd3](https://github.com/appium/appium-uiautomator2-server/commit/5180dd30184196af6254c2e243cfae478f6b1672))
+
 ## [9.0.0](https://github.com/appium/appium-uiautomator2-server/compare/v8.1.2...v9.0.0) (2025-10-24)
 
 ### ⚠ BREAKING CHANGES
