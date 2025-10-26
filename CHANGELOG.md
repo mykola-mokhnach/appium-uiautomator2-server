@@ -1,3 +1,9 @@
+## [9.1.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.0.1...v9.1.0) (2025-10-26)
+
+### Features
+
+* Update the source for compatibility with Java 8/API level 26 ([#723](https://github.com/appium/appium-uiautomator2-server/issues/723)) ([43955f8](https://github.com/appium/appium-uiautomator2-server/commit/43955f8fa7e7d078aba2db52df944612bef5dcf7))
+
 ## [9.0.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.0.0...v9.0.1) (2025-10-24)
 
 ### Miscellaneous Chores
