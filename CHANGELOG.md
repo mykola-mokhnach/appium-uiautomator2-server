@@ -1,3 +1,9 @@
+## [9.1.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.0...v9.1.1) (2025-10-29)
+
+### Miscellaneous Chores
+
+* Bump dependency versions ([#724](https://github.com/appium/appium-uiautomator2-server/issues/724)) ([e2b2813](https://github.com/appium/appium-uiautomator2-server/commit/e2b2813644fe72a0611681b7233f7112596126cf))
+
 ## [9.1.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.0.1...v9.1.0) (2025-10-26)
 
 ### Features
