@@ -122,7 +122,15 @@ android {
         resources {
             excludes += setOf(
                 "META-INF/maven/com.google.guava/guava/pom.properties",
-                "META-INF/maven/com.google.guava/guava/pom.xml"
+                "META-INF/maven/com.google.guava/guava/pom.xml",
+                // Exclude duplicate INDEX.LIST files from Netty modules
+                "META-INF/INDEX.LIST",
+                // Exclude Netty version properties files
+                "META-INF/io.netty.versions.properties",
+                // Exclude native image files to prevent conflicts
+                "META-INF/native-image/**",
+                // Exclude native transport files
+                "META-INF/native/**"
             )
         }
     }
@@ -149,7 +157,8 @@ dependencies {
     implementation(libs.bundles.androix.test)
     implementation(libs.uiautomator)
     implementation(libs.gson)
-    implementation(libs.netty.all)
+    implementation(libs.bundles.netty.core)
+    implementation(libs.bundles.netty.http)
     implementation(libs.junidecode)
     // Dependencies required for XPath search
     implementation(libs.xercesimpl)
