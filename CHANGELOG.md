@@ -1,3 +1,9 @@
+## [9.1.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.1...v9.1.2) (2025-11-07)
+
+### Miscellaneous Chores
+
+* Bump org.eclipse.wst.xml.xpath2.processor to v2.2.0 ([#725](https://github.com/appium/appium-uiautomator2-server/issues/725)) ([1790a44](https://github.com/appium/appium-uiautomator2-server/commit/1790a44fa305a7b9e4977d6b1cb8f18483972180))
+
 ## [9.1.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.0...v9.1.1) (2025-10-29)
 
 ### Miscellaneous Chores
