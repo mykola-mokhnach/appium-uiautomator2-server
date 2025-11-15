@@ -1,3 +1,9 @@
+## [9.1.3](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.2...v9.1.3) (2025-11-15)
+
+### Miscellaneous Chores
+
+* publish via trusted publisher ([#726](https://github.com/appium/appium-uiautomator2-server/issues/726)) ([8e9c9d1](https://github.com/appium/appium-uiautomator2-server/commit/8e9c9d1f5dcc249d1ea648c6f9ff07371150efce))
+
 ## [9.1.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.1...v9.1.2) (2025-11-07)
 
 ### Miscellaneous Chores
