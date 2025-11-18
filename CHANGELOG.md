@@ -1,3 +1,9 @@
+## [9.1.4](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.3...v9.1.4) (2025-11-18)
+
+### Miscellaneous Chores
+
+* Migrate scripts to ESM format ([#728](https://github.com/appium/appium-uiautomator2-server/issues/728)) ([7ba5305](https://github.com/appium/appium-uiautomator2-server/commit/7ba530529266337daeb67a1f0dd9f3084e6975e1))
+
 ## [9.1.3](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.2...v9.1.3) (2025-11-15)
 
 ### Miscellaneous Chores
