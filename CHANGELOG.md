@@ -1,3 +1,13 @@
+## [9.2.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.4...v9.2.0) (2025-11-29)
+
+### Features
+
+* Add an explicit endpoint to reset the accessibility cache ([#732](https://github.com/appium/appium-uiautomator2-server/issues/732)) ([8363bf7](https://github.com/appium/appium-uiautomator2-server/commit/8363bf7958550b913d8221d9fd4fd4f46974de19))
+
+### Miscellaneous Chores
+
+* Bump AGP version ([#731](https://github.com/appium/appium-uiautomator2-server/issues/731)) ([fcc9a40](https://github.com/appium/appium-uiautomator2-server/commit/fcc9a404fa5b49a4d64487e4cf6d160bc571d297))
+
 ## [9.1.4](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.3...v9.1.4) (2025-11-18)
 
 ### Miscellaneous Chores
