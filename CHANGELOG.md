@@ -1,3 +1,9 @@
+## [9.3.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.2.0...v9.3.0) (2025-11-29)
+
+### Features
+
+* calls clearCache from UiAutomation API for API level 34+ ([#734](https://github.com/appium/appium-uiautomator2-server/issues/734)) ([40f8703](https://github.com/appium/appium-uiautomator2-server/commit/40f8703d0c0fc92d93d0c75f3fe72b7b5bca2db6))
+
 ## [9.2.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.1.4...v9.2.0) (2025-11-29)
 
 ### Features
