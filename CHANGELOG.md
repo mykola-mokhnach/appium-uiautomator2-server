@@ -1,3 +1,9 @@
+## [9.4.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.3.1...v9.4.0) (2025-11-30)
+
+### Features
+
+* Respect current display id for UiObject2 lookups ([#736](https://github.com/appium/appium-uiautomator2-server/issues/736)) ([67ec512](https://github.com/appium/appium-uiautomator2-server/commit/67ec5121309a78a4c7459a61608cd16d984f1966))
+
 ## [9.3.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.3.0...v9.3.1) (2025-11-30)
 
 ### Bug Fixes
