@@ -1,3 +1,9 @@
+## [9.3.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.3.0...v9.3.1) (2025-11-30)
+
+### Bug Fixes
+
+* Update custom endpoint ([#738](https://github.com/appium/appium-uiautomator2-server/issues/738)) ([aca4749](https://github.com/appium/appium-uiautomator2-server/commit/aca4749fe9c2b1dafdd9beb3bd92e6b0e67316d5))
+
 ## [9.3.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.2.0...v9.3.0) (2025-11-29)
 
 ### Features
