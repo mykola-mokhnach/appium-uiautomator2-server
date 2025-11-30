@@ -1,3 +1,9 @@
+## [9.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.4.1...v9.5.0) (2025-11-30)
+
+### Features
+
+* Add window-id attribute to XML elements ([#740](https://github.com/appium/appium-uiautomator2-server/issues/740)) ([8a47003](https://github.com/appium/appium-uiautomator2-server/commit/8a470038d8e138b72578f9b0add9fa7a343f5d99))
+
 ## [9.4.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.4.0...v9.4.1) (2025-11-30)
 
 ### Miscellaneous Chores
