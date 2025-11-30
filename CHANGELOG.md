@@ -1,3 +1,9 @@
+## [9.4.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.4.0...v9.4.1) (2025-11-30)
+
+### Miscellaneous Chores
+
+* Respect CurrentDisplayId setting while taking screenshots ([#735](https://github.com/appium/appium-uiautomator2-server/issues/735)) ([1ee22d2](https://github.com/appium/appium-uiautomator2-server/commit/1ee22d2bd1075bbafdfc7fc8b7fb4d13377ffb45))
+
 ## [9.4.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.3.1...v9.4.0) (2025-11-30)
 
 ### Features
