@@ -1,3 +1,9 @@
+## [9.7.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.7.0...v9.7.1) (2025-12-01)
+
+### Miscellaneous Chores
+
+* Align the type of physicalDisplayId property ([#745](https://github.com/appium/appium-uiautomator2-server/issues/745)) ([12f5bf6](https://github.com/appium/appium-uiautomator2-server/commit/12f5bf60d8c266d0f0849c799c54b2acb843b03d))
+
 ## [9.7.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.2...v9.7.0) (2025-12-01)
 
 ### Features
