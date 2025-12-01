@@ -1,3 +1,14 @@
+## [9.7.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.2...v9.7.0) (2025-12-01)
+
+### Features
+
+* Add additional properties to listWindows output ([#742](https://github.com/appium/appium-uiautomator2-server/issues/742)) ([ea7963c](https://github.com/appium/appium-uiautomator2-server/commit/ea7963c865ce247a1c286ae6867123da84278b1e))
+* Add API to list displays ([#743](https://github.com/appium/appium-uiautomator2-server/issues/743)) ([fd70f02](https://github.com/appium/appium-uiautomator2-server/commit/fd70f022a50c51effddc726b66401bec20af8e8d))
+
+### Miscellaneous Chores
+
+* Add a possibility to reset current display id ([#744](https://github.com/appium/appium-uiautomator2-server/issues/744)) ([1e3861a](https://github.com/appium/appium-uiautomator2-server/commit/1e3861a482a284520f4e7cd9b1d161c01f517225))
+
 ## [9.6.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.1...v9.6.2) (2025-12-01)
 
 ### Bug Fixes
