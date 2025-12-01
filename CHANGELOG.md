@@ -1,3 +1,9 @@
+## [9.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.5.0...v9.6.0) (2025-12-01)
+
+### Features
+
+* Add API to list windows ([#739](https://github.com/appium/appium-uiautomator2-server/issues/739)) ([30efb71](https://github.com/appium/appium-uiautomator2-server/commit/30efb71694ef4464a9cd2611e8c692e7410390b7))
+
 ## [9.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.4.1...v9.5.0) (2025-11-30)
 
 ### Features
