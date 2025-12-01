@@ -1,3 +1,9 @@
+## [9.6.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.1...v9.6.2) (2025-12-01)
+
+### Bug Fixes
+
+* add null check for getAddress for emulator env to get getPhysicalDisplayId ([#741](https://github.com/appium/appium-uiautomator2-server/issues/741)) ([8177942](https://github.com/appium/appium-uiautomator2-server/commit/8177942c15981219f47ba1a390926b0a4c37c321))
+
 ## [9.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.0...v9.6.1) (2025-12-01)
 
 ### Bug Fixes
