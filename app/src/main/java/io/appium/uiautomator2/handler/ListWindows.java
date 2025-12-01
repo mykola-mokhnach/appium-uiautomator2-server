@@ -146,11 +146,12 @@ public class ListWindows extends SafeRequestHandler {
         }
 
         String screenshot = skipScreenshots ? null : takeWindowScreenshot(window);
+        String physicalDisplayIdString = physicalDisplayId != null ? String.valueOf(physicalDisplayId) : null;
 
         return new WindowModel(
                 windowId,
                 displayId,
-                physicalDisplayId,
+                physicalDisplayIdString,
                 bounds,
                 packageName,
                 screenshot,
@@ -232,7 +233,7 @@ public class ListWindows extends SafeRequestHandler {
             case "displayId":
                 return matchesInteger(window.displayId, value);
             case "physicalDisplayId":
-                return matchesLong(window.physicalDisplayId, value);
+                return matchesString(window.physicalDisplayId, value);
             case "type":
                 return matchesInteger(window.type, value);
             case "title":
@@ -280,21 +281,12 @@ public class ListWindows extends SafeRequestHandler {
         }
     }
 
-    private boolean matchesLong(Long value, Object filterValue) {
+    private boolean matchesString(String value, Object filterValue) {
         if (value == null) {
             return false;
         }
 
-        if (filterValue instanceof Number) {
-            return value.equals(((Number) filterValue).longValue());
-        }
-
-        try {
-            long filterLong = Long.parseLong(filterValue.toString());
-            return value.equals(filterLong);
-        } catch (NumberFormatException e) {
-            return false;
-        }
+        return filterValue.toString().equals(value);
     }
 
     private boolean matchesBoolean(boolean value, Object filterValue) {
