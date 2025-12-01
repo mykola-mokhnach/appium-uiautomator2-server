@@ -23,8 +23,9 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityWindowInfo;
 
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import io.appium.uiautomator2.common.exceptions.UiAutomator2Exception;
@@ -36,56 +37,72 @@ import io.appium.uiautomator2.model.settings.Settings;
 
 public class AXWindowHelpers {
     private static final long AX_ROOT_RETRIEVAL_TIMEOUT_MS = 10000;
-    private static AccessibilityNodeInfo[] cachedWindowRoots = null;
-
-    /**
-     * Clears the in-process Accessibility cache, removing any stale references. Because the
-     * AccessibilityInteractionClient singleton stores copies of AccessibilityNodeInfo instances,
-     * calls to public APIs such as `recycle` do not guarantee cached references get updated. See
-     * the android.view.accessibility AIC and ANI source code for more information.
-     */
-    private static void clearAccessibilityCache() {
-        try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                boolean cleared = UiAutomatorBridge.getInstance().getUiAutomation().clearCache();
-                if (!cleared) {
-                    Logger.info("Accessibility Node cache was not cleared");
-                }
-            } else {
-                // This call invokes `AccessibilityInteractionClient.getInstance().clearCache();` method
-                UiAutomatorBridge.getInstance().getUiAutomation().setServiceInfo(null);
-            }
-        } catch (NullPointerException npe) {
-            // it is fine
-            // ignore
-        } catch (Exception e) {
-            Logger.warn("Failed to clear Accessibility Node cache", e);
-        }
-    }
+    private static final long AX_ROOT_RETRIEVAL_INTERVAL_MS = 250;
+    private static final Map<String, AccessibilityNodeInfo[]> CACHED_WINDOW_ROOTS = new HashMap<>();
 
     public static void resetAccessibilityCache() {
         Device.waitForIdle();
         clearAccessibilityCache();
-        cachedWindowRoots = null;
+        synchronized (CACHED_WINDOW_ROOTS) {
+            CACHED_WINDOW_ROOTS.clear();
+        }
+    }
+
+    public static AccessibilityNodeInfo[] getCachedWindowRoots() {
+        boolean shouldRetrieveAllWindowRoots = Settings.get(EnableMultiWindows.class).getValue();
+        // Multi-window retrieval is needed to search the topmost window from active package.
+        boolean shouldRetrieveTopmostWindowRootFromActivePackage = Settings.get(
+                EnableTopmostWindowFromActivePackage.class
+        ).getValue();
+        String cacheKey = makeCacheKey(
+                shouldRetrieveAllWindowRoots,
+                shouldRetrieveTopmostWindowRootFromActivePackage
+        );
+        synchronized (CACHED_WINDOW_ROOTS) {
+            if (CACHED_WINDOW_ROOTS.containsKey(cacheKey)) {
+                return CACHED_WINDOW_ROOTS.get(cacheKey);
+            }
+
+            // Either one of above settings has changed or we did not have cached windows yet
+            CACHED_WINDOW_ROOTS.clear();
+            AccessibilityNodeInfo[] newRoots = retrieveWindowRoots(
+                    shouldRetrieveAllWindowRoots,
+                    shouldRetrieveTopmostWindowRootFromActivePackage
+            );
+            CACHED_WINDOW_ROOTS.put(cacheKey, newRoots);
+            return newRoots;
+        }
+    }
+
+    private static AccessibilityNodeInfo[] retrieveWindowRoots(
+            boolean shouldRetrieveAllWindowRoots,
+            boolean shouldRetrieveTopmostWindowRootFromActivePackage
+    ) {
+        if (shouldRetrieveAllWindowRoots) {
+            return getWindowRoots();
+        }
+        return new AccessibilityNodeInfo[] {
+            shouldRetrieveTopmostWindowRootFromActivePackage
+                    ? getTopmostWindowRootFromActivePackage()
+                    : getActiveWindowRoot()
+        };
     }
 
     private static AccessibilityNodeInfo getActiveWindowRoot() {
         long start = SystemClock.uptimeMillis();
         while (SystemClock.uptimeMillis() - start < AX_ROOT_RETRIEVAL_TIMEOUT_MS) {
             try {
-                AccessibilityNodeInfo root = UiAutomatorBridge.getInstance().getAccessibilityRootNode();
-                if (root != null) {
-                    return root;
+                AccessibilityNodeInfo rootNode = UiAutomatorBridge.getInstance()
+                        .getUiAutomation()
+                        .getRootInActiveWindow();
+                if (rootNode != null) {
+                    return rootNode;
                 }
             } catch (Exception e) {
-                /*
-                 * Sometimes getAccessibilityRootNode() throws
-                 * "java.lang.IllegalStateException: Cannot perform this action on a sealed instance."
-                 * Ignore it and try to re-get root node.
-                 */
                 Logger.info("An exception was caught while looking for " +
                         "the root of the active window. Ignoring it", e);
             }
+            SystemClock.sleep(AX_ROOT_RETRIEVAL_INTERVAL_MS);
         }
         throw new UiAutomator2Exception(String.format(
                 "Timed out after %dms waiting for the root AccessibilityNodeInfo in the active window. " +
@@ -130,11 +147,8 @@ public class AXWindowHelpers {
         CharSequence activeRootPackageName = Objects.requireNonNull(getActiveWindowRoot().getPackageName());
 
         List<AccessibilityWindowInfo> windows = getWindows();
-        Collections.sort(windows, new Comparator<AccessibilityWindowInfo>() {
-            @Override
-            public int compare(AccessibilityWindowInfo w1, AccessibilityWindowInfo w2) {
-                return Integer.compare(w2.getLayer(), w1.getLayer()); // descending order
-            }
+        windows.sort((w1, w2) -> {
+            return Integer.compare(w2.getLayer(), w1.getLayer()); // descending order
         });
         return windows.stream()
                 .map(AccessibilityWindowInfo::getRoot)
@@ -146,28 +160,39 @@ public class AXWindowHelpers {
                                 activeRootPackageName)));
     }
 
-    public static AccessibilityNodeInfo[] getCachedWindowRoots() {
-        if (cachedWindowRoots == null) {
-            boolean shouldRetrieveAllWindowRoots = Settings.get(EnableMultiWindows.class).getValue();
-            // Multi-window retrieval is needed to search the topmost window from active package.
-            boolean shouldRetrieveTopmostWindowRootFromActivePackage = Settings.get(
-                    EnableTopmostWindowFromActivePackage.class
-            ).getValue();
-            /*
-             * ENABLE_MULTI_WINDOWS and ENABLE_TOPMOST_WINDOW_FROM_ACTIVE_PACKAGE
-             * are disabled by default
-             * because UIAutomatorViewer captures active window properties and
-             * end users always rely on its output while writing their tests.
-             * https://code.google.com/p/android/issues/detail?id=207569
-             */
-            cachedWindowRoots = shouldRetrieveAllWindowRoots
-                    ? getWindowRoots()
-                    : new AccessibilityNodeInfo[] {
-                            shouldRetrieveTopmostWindowRootFromActivePackage
-                                    ? getTopmostWindowRootFromActivePackage()
-                                    : getActiveWindowRoot()
-                    };
+    /**
+     * Clears the in-process Accessibility cache, removing any stale references. Because the
+     * AccessibilityInteractionClient singleton stores copies of AccessibilityNodeInfo instances,
+     * calls to public APIs such as `recycle` do not guarantee cached references get updated. See
+     * the android.view.accessibility AIC and ANI source code for more information.
+     */
+    private static void clearAccessibilityCache() {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                boolean cleared = UiAutomatorBridge.getInstance().getUiAutomation().clearCache();
+                if (cleared) {
+                    return;
+                }
+                Logger.info("Accessibility Node cache was not cleared. Falling back to the legacy API");
+            }
+            // This call invokes `AccessibilityInteractionClient.getInstance().clearCache();` method
+            UiAutomatorBridge.getInstance().getUiAutomation().setServiceInfo(null);
+        } catch (NullPointerException npe) {
+            // it is fine
+            // ignore
+        } catch (Exception e) {
+            Logger.warn("Failed to clear Accessibility Node cache", e);
         }
-        return cachedWindowRoots;
+    }
+
+    private static String makeCacheKey(
+            boolean shouldRetrieveAllWindowRoots,
+            boolean shouldRetrieveTopmostWindowRootFromActivePackage
+    ) {
+        return String.format(
+                "%s:%s",
+                shouldRetrieveAllWindowRoots,
+                shouldRetrieveTopmostWindowRootFromActivePackage
+        );
     }
 }
