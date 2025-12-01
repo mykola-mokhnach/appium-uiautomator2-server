@@ -1,3 +1,9 @@
+## [9.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.6.0...v9.6.1) (2025-12-01)
+
+### Bug Fixes
+
+* Accessibility windows cache management ([#737](https://github.com/appium/appium-uiautomator2-server/issues/737)) ([fe6b086](https://github.com/appium/appium-uiautomator2-server/commit/fe6b0869c571f8f7130448619bf12d0039e46253))
+
 ## [9.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.5.0...v9.6.0) (2025-12-01)
 
 ### Features
