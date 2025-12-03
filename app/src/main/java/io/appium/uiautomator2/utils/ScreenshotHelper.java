@@ -16,12 +16,10 @@
 
 package io.appium.uiautomator2.utils;
 
-import android.app.Service;
 import android.app.UiAutomation;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
-import android.hardware.display.DisplayManager;
 import android.os.ParcelFileDescriptor;
 import android.util.Base64;
 import android.util.DisplayMetrics;
@@ -33,6 +31,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import io.appium.uiautomator2.common.exceptions.CompressScreenshotException;
 import io.appium.uiautomator2.common.exceptions.CropScreenshotException;
@@ -45,7 +44,6 @@ import io.appium.uiautomator2.model.settings.Settings;
 import static android.graphics.Bitmap.CompressFormat.JPEG;
 import static android.graphics.Bitmap.CompressFormat.PNG;
 import static android.util.DisplayMetrics.DENSITY_DEFAULT;
-import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 
 public class ScreenshotHelper {
     private static final int PNG_MAGIC_LENGTH = 8;
@@ -113,17 +111,17 @@ public class ScreenshotHelper {
 
         UiAutomation automation = CustomUiDevice.getInstance().getUiAutomation();
         if (shouldTryScreencap) {
+            String screencapDisplayId = extractScreencapDisplayId(display);
+            if (screencapDisplayId == null && isCustomDisplayId) {
+                throw new TakeScreenshotException(
+                        String.format("Cannot take a screenshot of display %s " +
+                                "because its device id cannot be determined", display.getDisplayId())
+                );
+            }
             try {
-                Long physicalDisplayId = DisplayIdHelper.getPhysicalDisplayId(display);
-                if (physicalDisplayId == null && isCustomDisplayId) {
-                    throw new TakeScreenshotException(
-                            String.format("Cannot take a screenshot of display %s " +
-                                            "because its physical id cannot be determined", display.getDisplayId())
-                    );
-                }
-                String command = physicalDisplayId == null
+                String command = screencapDisplayId == null
                         ? "screencap -p"
-                        : String.format("screencap -d %d -p", physicalDisplayId);
+                        : String.format("screencap -d %s -p", screencapDisplayId);
                 return retrieveScreenshotViaScreencap(command, automation, outputType);
             } catch (Exception e) {
                 if (isCustomDisplayId) {
@@ -140,6 +138,16 @@ public class ScreenshotHelper {
         Bitmap screenshot = automation.takeScreenshot();
         validateScreenshot(screenshot);
         return formatScreenshotOutput(screenshot, outputType);
+    }
+
+    @Nullable
+    private static String extractScreencapDisplayId(Display display) {
+        Long physicalDisplayId = DisplayIdHelper.getPhysicalDisplayId(display);
+        if (physicalDisplayId != null) {
+            return physicalDisplayId.toString();
+        }
+        Map<String, String> virtualDisplayMap = DisplayIdHelper.parseVirtualDisplays();
+        return virtualDisplayMap.get(display.getName());
     }
 
     /**
@@ -160,13 +168,6 @@ public class ScreenshotHelper {
         // For Bitmap output, decode the PNG bytes
         Bitmap bitmap = BitmapFactory.decodeByteArray(pngBytes, 0, pngBytes.length);
         return outputType.cast(bitmap);
-    }
-
-    @Nullable
-    private static Display getDisplayById(int displayId) {
-        DisplayManager displayManager = (DisplayManager) getInstrumentation().getTargetContext()
-                .getSystemService(Service.DISPLAY_SERVICE);
-        return displayManager.getDisplay(displayId);
     }
 
     private static boolean doesDisplayHaveCustomDensity(Display display) {
