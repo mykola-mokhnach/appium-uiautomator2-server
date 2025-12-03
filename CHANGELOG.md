@@ -1,3 +1,9 @@
+## [9.9.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.8.0...v9.9.0) (2025-12-03)
+
+### Features
+
+* let screenshot work with virtual display for API Level 34 ([#746](https://github.com/appium/appium-uiautomator2-server/issues/746)) ([8c92ef0](https://github.com/appium/appium-uiautomator2-server/commit/8c92ef02651c1e5a33c8074c6636bfa6a40efe57))
+
 ## [9.8.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.7.1...v9.8.0) (2025-12-02)
 
 ### Features
