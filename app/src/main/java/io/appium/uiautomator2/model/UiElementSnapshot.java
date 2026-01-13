@@ -16,15 +16,18 @@
 
 package io.appium.uiautomator2.model;
 
+import static android.view.accessibility.AccessibilityNodeInfo.EXTRA_DATA_RENDERING_INFO_KEY;
 import static io.appium.uiautomator2.utils.ReflectionUtils.setField;
 import static io.appium.uiautomator2.utils.StringHelpers.charSequenceToNullableString;
 
 import android.os.Build;
+import android.os.Bundle;
 import android.text.Spanned;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Pair;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.accessibility.AccessibilityNodeInfo.ExtraRenderingInfo;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -43,9 +46,11 @@ import java.util.stream.IntStream;
 import java.util.stream.Collectors;
 
 import io.appium.uiautomator2.core.AxNodeInfoHelper;
+import io.appium.uiautomator2.model.internal.TextData;
 import io.appium.uiautomator2.model.settings.AllowInvisibleElements;
 import io.appium.uiautomator2.model.settings.AlwaysTraversableViewClasses;
 import io.appium.uiautomator2.model.settings.IncludeA11yActionsInPageSource;
+import io.appium.uiautomator2.model.settings.IncludeExtraRenderingInfo;
 import io.appium.uiautomator2.model.settings.IncludeExtrasInPageSource;
 import io.appium.uiautomator2.model.settings.Settings;
 import io.appium.uiautomator2.model.settings.SnapshotMaxDepth;
@@ -74,7 +79,7 @@ public class UiElementSnapshot extends UiElement<AccessibilityNodeInfo, UiElemen
             Attribute.LIVE_REGION, Attribute.CONTEXT_CLICKABLE, Attribute.MAX_TEXT_LENGTH,
             Attribute.CONTENT_INVALID, Attribute.ERROR_TEXT, Attribute.PANE_TITLE,
             Attribute.TOOLTIP_TEXT, Attribute.TEXT_HAS_CLICKABLE_SPAN, Attribute.ACTIONS,
-            Attribute.WINDOW_ID
+            Attribute.WINDOW_ID, Attribute.TEXT_SIZE, Attribute.TEXT_UNIT
             // Skip CONTENT_SIZE as it is quite expensive to compute it for each element
     };
     private final static Attribute[] TOAST_NODE_ATTRIBUTES = new Attribute[]{
@@ -230,9 +235,46 @@ public class UiElementSnapshot extends UiElement<AccessibilityNodeInfo, UiElemen
                 int windowId = node.getWindowId();
                 return windowId != AxNodeInfoHelper.UNDEFINED_WINDOW_ID ? windowId : null;
             }
+            case TEXT_SIZE: {
+                TextData textData = extractTextData(node);
+                return textData != null ? textData.textSize : null;
+            }
+            case TEXT_UNIT: {
+                TextData textData = extractTextData(node);
+                return textData != null ? textData.textUnit : null;
+            }
             default:
                 return null;
         }
+    }
+
+    @Nullable
+    private TextData extractTextData(AccessibilityNodeInfo node) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R
+                || node.getText() == null
+                || node.getText().length() == 0) {
+            return null;
+        }
+
+        ExtraRenderingInfo extraRenderingInfo = node.getExtraRenderingInfo();
+
+        if (extraRenderingInfo == null) {
+            node.refreshWithExtraData(EXTRA_DATA_RENDERING_INFO_KEY, new Bundle());
+            extraRenderingInfo = node.getExtraRenderingInfo();
+        }
+
+        if (extraRenderingInfo == null) {
+            return null;
+        }
+
+        float textSizeInPx = extraRenderingInfo.getTextSizeInPx();
+        int textSizeUnit = extraRenderingInfo.getTextSizeUnit();
+
+        if (textSizeInPx < 0) {
+            return null;
+        }
+
+        return TextData.parseTextData(textSizeInPx, textSizeUnit);
     }
 
     private Map<Attribute, Object> collectAttributes() {
@@ -244,6 +286,10 @@ public class UiElementSnapshot extends UiElement<AccessibilityNodeInfo, UiElemen
             }
             if (attr.equals(Attribute.ACTIONS) &&
                     !Settings.get(IncludeA11yActionsInPageSource.class).getValue()) {
+                continue;
+            }
+            if ((attr.equals(Attribute.TEXT_SIZE) || attr.equals(Attribute.TEXT_UNIT)) &&
+                    !Settings.get(IncludeExtraRenderingInfo.class).getValue()) {
                 continue;
             }
             if (includedAttributes.isEmpty() || includedAttributes.contains(attr)) {

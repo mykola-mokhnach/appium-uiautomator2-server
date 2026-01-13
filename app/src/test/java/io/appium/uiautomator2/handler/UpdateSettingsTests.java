@@ -42,6 +42,7 @@ import io.appium.uiautomator2.model.settings.CompressedLayoutHierarchy;
 import io.appium.uiautomator2.model.settings.ElementResponseAttributes;
 import io.appium.uiautomator2.model.settings.EnableNotificationListener;
 import io.appium.uiautomator2.model.settings.IncludeA11yActionsInPageSource;
+import io.appium.uiautomator2.model.settings.IncludeExtraRenderingInfo;
 import io.appium.uiautomator2.model.settings.IncludeExtrasInPageSource;
 import io.appium.uiautomator2.model.settings.KeyInjectionDelay;
 import io.appium.uiautomator2.model.settings.MjpegBilinearFiltering;
@@ -65,6 +66,7 @@ import static io.appium.uiautomator2.model.settings.Settings.ELEMENT_RESPONSE_AT
 import static io.appium.uiautomator2.model.settings.Settings.ENABLE_NOTIFICATION_LISTENER;
 import static io.appium.uiautomator2.model.settings.Settings.INCLUDE_A11Y_ACTIONS_IN_PAGE_SOURCE;
 import static io.appium.uiautomator2.model.settings.Settings.INCLUDE_EXTRAS_IN_PAGE_SOURCE;
+import static io.appium.uiautomator2.model.settings.Settings.INCLUDE_EXTRA_RENDERING_INFO;
 import static io.appium.uiautomator2.model.settings.Settings.KEY_INJECTION_DELAY;
 import static io.appium.uiautomator2.model.settings.Settings.MJPEG_BILINEAR_FILTERING;
 import static io.appium.uiautomator2.model.settings.Settings.MJPEG_SCALING_FACTOR;
@@ -235,6 +237,11 @@ public class UpdateSettingsTests {
     @Test
     public void shouldBeAbleToReturnIncludeA11yActionsInPageSourceSetting() {
         verifySettingIsAvailable(INCLUDE_A11Y_ACTIONS_IN_PAGE_SOURCE, IncludeA11yActionsInPageSource.class);
+    }
+
+    @Test
+    public void shouldBeAbleToReturnIncludeExtraRenderingInfoSetting() {
+        verifySettingIsAvailable(INCLUDE_EXTRA_RENDERING_INFO, IncludeExtraRenderingInfo.class);
     }
 
     private void verifySettingIsAvailable(Settings setting, Class<? extends AbstractSetting<?>> clazz) {
