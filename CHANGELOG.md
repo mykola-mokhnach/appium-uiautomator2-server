@@ -1,3 +1,9 @@
+## [9.10.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.9.1...v9.10.0) (2026-01-13)
+
+### Features
+
+* Add text size and text unit attributes ([#749](https://github.com/appium/appium-uiautomator2-server/issues/749)) ([c93de5a](https://github.com/appium/appium-uiautomator2-server/commit/c93de5a61865f6eaccceb9c73df9f4987ba45a02))
+
 ## [9.9.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.9.0...v9.9.1) (2026-01-06)
 
 ### Miscellaneous Chores
