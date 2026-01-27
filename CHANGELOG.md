@@ -1,3 +1,9 @@
+## [9.10.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.0...v9.10.1) (2026-01-27)
+
+### Miscellaneous Chores
+
+* **deps-dev:** bump @appium/eslint-config-appium-ts ([#751](https://github.com/appium/appium-uiautomator2-server/issues/751)) ([73fb98c](https://github.com/appium/appium-uiautomator2-server/commit/73fb98cfbd1df4ef775496be3bb2d5606c25d1b4))
+
 ## [9.10.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.9.1...v9.10.0) (2026-01-13)
 
 ### Features
