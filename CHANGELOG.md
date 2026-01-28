@@ -1,3 +1,9 @@
+## [9.10.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.1...v9.10.2) (2026-01-28)
+
+### Bug Fixes
+
+* lint ([#752](https://github.com/appium/appium-uiautomator2-server/issues/752)) ([1b8ca58](https://github.com/appium/appium-uiautomator2-server/commit/1b8ca58fcf8ff6f038cfec4fee31d47d3e8dc6b8))
+
 ## [9.10.1](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.0...v9.10.1) (2026-01-27)
 
 ### Miscellaneous Chores
