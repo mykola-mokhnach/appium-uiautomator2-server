@@ -1,3 +1,9 @@
+## [9.10.4](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.3...v9.10.4) (2026-01-30)
+
+### Bug Fixes
+
+* Respect currentDisplayId setting while fetching display metrics ([#755](https://github.com/appium/appium-uiautomator2-server/issues/755)) ([bffe401](https://github.com/appium/appium-uiautomator2-server/commit/bffe40175d02bf836babcf72e9e4dea7d770615c))
+
 ## [9.10.3](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.2...v9.10.3) (2026-01-30)
 
 ### Bug Fixes
