@@ -1,3 +1,9 @@
+## [9.10.3](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.2...v9.10.3) (2026-01-30)
+
+### Bug Fixes
+
+* Align keypress logic with Android sources ([#753](https://github.com/appium/appium-uiautomator2-server/issues/753)) ([e7b70ec](https://github.com/appium/appium-uiautomator2-server/commit/e7b70ecd715796d9f3d8c0f1cb5866cdb658744f))
+
 ## [9.10.2](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.1...v9.10.2) (2026-01-28)
 
 ### Bug Fixes
