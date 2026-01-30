@@ -1,3 +1,9 @@
+## [9.10.5](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.4...v9.10.5) (2026-01-30)
+
+### Bug Fixes
+
+* Add explicit input device to press key handlers ([#756](https://github.com/appium/appium-uiautomator2-server/issues/756)) ([2ec4ff1](https://github.com/appium/appium-uiautomator2-server/commit/2ec4ff159682bc94c5ea592b03c9c4ff495b3319))
+
 ## [9.10.4](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.3...v9.10.4) (2026-01-30)
 
 ### Bug Fixes
