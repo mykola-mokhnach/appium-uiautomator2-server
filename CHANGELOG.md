@@ -1,3 +1,9 @@
+## [9.11.0](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.5...v9.11.0) (2026-02-02)
+
+### Features
+
+* Make the input source configurable for press key APIs ([#757](https://github.com/appium/appium-uiautomator2-server/issues/757)) ([9e9bc01](https://github.com/appium/appium-uiautomator2-server/commit/9e9bc01c963d014c09b98d840687ce216d02bed1))
+
 ## [9.10.5](https://github.com/appium/appium-uiautomator2-server/compare/v9.10.4...v9.10.5) (2026-01-30)
 
 ### Bug Fixes
