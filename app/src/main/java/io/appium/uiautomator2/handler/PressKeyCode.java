@@ -28,7 +28,6 @@ import io.appium.uiautomator2.handler.request.SafeRequestHandler;
 import io.appium.uiautomator2.http.AppiumResponse;
 import io.appium.uiautomator2.http.IHttpRequest;
 import io.appium.uiautomator2.model.api.KeyCodeModel;
-import io.appium.uiautomator2.utils.Logger;
 
 import static io.appium.uiautomator2.utils.Device.getUiDevice;
 import static io.appium.uiautomator2.utils.ModelUtils.toModel;
@@ -40,30 +39,30 @@ public class PressKeyCode extends SafeRequestHandler {
 
     @Override
     protected AppiumResponse safeHandle(IHttpRequest request) {
-        Logger.info("Calling PressKeyCode... ");
         final KeyCodeModel model = toModel(request, KeyCodeModel.class);
         final int keyCode = model.keycode;
-        Integer metaState = model.metastate;
-        Integer flags = model.flags;
 
         boolean isSuccessful;
-        if (flags == null) {
-            isSuccessful = metaState == null
+        if (model.flags == null && model.source == null) {
+            isSuccessful = model.metastate == null
                 ? getUiDevice().pressKeyCode(keyCode)
-                : getUiDevice().pressKeyCode(keyCode, metaState);
+                : getUiDevice().pressKeyCode(keyCode, model.metastate);
         } else {
-            final InteractionController interactionController = UiAutomatorBridge.getInstance().getInteractionController();
-            metaState = metaState == null ? 0 : metaState;
+            final InteractionController interactionController = UiAutomatorBridge.getInstance()
+                .getInteractionController();
+            final int metaState = model.metastate == null ? 0 : model.metastate;
+            final int source = model.source == null ? InputDevice.SOURCE_KEYBOARD : model.source;
+            final int flags = model.flags == null ? 0 : model.flags;
 
             final long now = SystemClock.uptimeMillis();
             KeyEvent downEvent = new KeyEvent(
                     now, now, KeyEvent.ACTION_DOWN, keyCode, 0, metaState,
-                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, flags, InputDevice.SOURCE_KEYBOARD
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, flags, source
             );
             isSuccessful = interactionController.injectEventSync(downEvent);
             KeyEvent upEvent = new KeyEvent(
                     now, now, KeyEvent.ACTION_UP, keyCode, 0, metaState,
-                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, flags, InputDevice.SOURCE_KEYBOARD
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, flags, source
             );
             isSuccessful &= interactionController.injectEventSync(upEvent);
         }
