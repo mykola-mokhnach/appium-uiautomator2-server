@@ -1,3 +1,9 @@
+## [10.3.5](https://github.com/appium/appium-uiautomator2-server/compare/v10.3.4...v10.3.5) (2026-07-28)
+
+### Miscellaneous Chores
+
+* Integrate oxc and release configs ([#789](https://github.com/appium/appium-uiautomator2-server/issues/789)) ([de011dd](https://github.com/appium/appium-uiautomator2-server/commit/de011dde24daca9f298c8875d032d9fa2a97a160))
+
 ## [10.3.4](https://github.com/appium/appium-uiautomator2-server/compare/v10.3.3...v10.3.4) (2026-07-24)
 
 ### Miscellaneous Chores
