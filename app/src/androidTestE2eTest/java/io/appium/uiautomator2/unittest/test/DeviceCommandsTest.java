@@ -38,11 +38,16 @@ import io.appium.uiautomator2.unittest.test.internal.SkipHeadlessDevices;
 import io.appium.uiautomator2.unittest.test.internal.TestUtils;
 import io.appium.uiautomator2.utils.Device;
 
+import static android.os.SystemClock.elapsedRealtime;
+import static io.appium.uiautomator2.unittest.test.Config.DEFAULT_POLLING_INTERVAL;
+import static io.appium.uiautomator2.unittest.test.Config.EXPLICIT_TIMEOUT;
 import static io.appium.uiautomator2.unittest.test.internal.TestUtils.getJsonObjectCountInJsonArray;
 import static io.appium.uiautomator2.unittest.test.internal.TestUtils.waitForElement;
 import static io.appium.uiautomator2.unittest.test.internal.TestUtils.waitForElementInvisibility;
+import static io.appium.uiautomator2.unittest.test.internal.TestUtils.waitForMillis;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.findElement;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.findElements;
+import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.getDeclaredOrientation;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.getDeviceSize;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.getInfo;
 import static io.appium.uiautomator2.unittest.test.internal.commands.DeviceCommands.getPackages;
@@ -179,6 +184,28 @@ public class DeviceCommandsTest extends BaseTest {
         int width = value.getInt("width");
         assertTrue("device window height is " + height + ", which is not expected", height > 200);
         assertTrue("device window width is " + width + ", which is not expected", width > 100);
+    }
+
+    /**
+     * verifies manifest-declared screen orientation is exposed via dedicated endpoint
+     */
+    @Test
+    public void getDeclaredOrientationTest() {
+        final long start = elapsedRealtime();
+        String declaredOrientation = null;
+        do {
+            Response response = getDeclaredOrientation();
+            assertTrue(response.isSuccessful());
+            Object value = response.getValue();
+            declaredOrientation = value instanceof String ? (String) value : null;
+            if (declaredOrientation != null && declaredOrientation.matches("SCREEN_ORIENTATION_.+")) {
+                return;
+            }
+            waitForMillis(DEFAULT_POLLING_INTERVAL);
+        } while (elapsedRealtime() - start < EXPLICIT_TIMEOUT);
+        assertNotNull("Declared orientation should be available after session start", declaredOrientation);
+        assertTrue("Declared orientation should be a SCREEN_ORIENTATION_* constant",
+                declaredOrientation.matches("SCREEN_ORIENTATION_.+"));
     }
 
     /**
