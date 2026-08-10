@@ -1,3 +1,9 @@
+## [10.4.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.3.5...v10.4.0) (2026-08-10)
+
+### Features
+
+* expose manifest-declared screen orientation via dedicated API ([#783](https://github.com/appium/appium-uiautomator2-server/issues/783)) ([0d5fcd3](https://github.com/appium/appium-uiautomator2-server/commit/0d5fcd37f679efd13c9ae85646c9abaa9311f89e))
+
 ## [10.3.5](https://github.com/appium/appium-uiautomator2-server/compare/v10.3.4...v10.3.5) (2026-07-28)
 
 ### Miscellaneous Chores
