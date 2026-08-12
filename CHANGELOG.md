@@ -1,3 +1,9 @@
+## [10.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.5.0...v10.6.0) (2026-08-12)
+
+### Features
+
+* add mapTestTagToResourceId setting for Compose testTag support ([#791](https://github.com/appium/appium-uiautomator2-server/issues/791)) ([1d2d583](https://github.com/appium/appium-uiautomator2-server/commit/1d2d583f8ab27eebc0b5d64f89860a49a65daae3))
+
 ## [10.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.4.0...v10.5.0) (2026-08-12)
 
 ### Features
