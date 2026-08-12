@@ -1,3 +1,9 @@
+## [10.5.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.4.0...v10.5.0) (2026-08-12)
+
+### Features
+
+* expose collection/collection item attributes ([#790](https://github.com/appium/appium-uiautomator2-server/issues/790)) ([720c935](https://github.com/appium/appium-uiautomator2-server/commit/720c935dfd57a74ef0ab735df4b6cf543687a213))
+
 ## [10.4.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.3.5...v10.4.0) (2026-08-10)
 
 ### Features
