@@ -42,6 +42,7 @@ import io.appium.uiautomator2.model.By;
 import io.appium.uiautomator2.model.UiElementSnapshot;
 import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.model.settings.DisableIdLocatorAutocompletion;
+import io.appium.uiautomator2.model.settings.MapTestTagToResourceId;
 import io.appium.uiautomator2.model.settings.Settings;
 
 import static io.appium.uiautomator2.core.AxNodeInfoExtractor.toAxNodeInfo;
@@ -67,19 +68,6 @@ public class ElementLocationHelpers {
     private static final Pattern resourceIdRegex = Pattern
             .compile("^[a-zA-Z_][a-zA-Z0-9._]*:[^/]+/[\\S]+$");
 
-    @Nullable
-    private static String getPackageName() {
-        String pkg = AppiumUIA2Driver.getInstance()
-                .getSessionOrThrow()
-                .getCapability("appPackage", "");
-        if (isBlank(pkg)) {
-            pkg = CustomUiDevice.getInstance().getInstrumentation()
-                    .getTargetContext()
-                    .getPackageName();
-        }
-        return isBlank(pkg) ? null : pkg;
-    }
-
     public static String rewriteIdLocator(By.ById by) {
         String locator = by.getElementLocator();
         if (Settings.get(DisableIdLocatorAutocompletion.class).getValue()
@@ -94,22 +82,12 @@ public class ElementLocationHelpers {
         String packageName = getPackageName();
         if (packageName == null) {
             throw new UiAutomator2Exception(String.format(
-                    "Cannot rewrite element locator '%s' to its complete form, because " +
+                    "Cannot rewrite element locator '%1$s' to its complete form, because " +
                             "the current application package name is unknown. Consider " +
                             "providing the app package name or changing the locator to " +
-                            "'<package_name>:id/%s' format.", by.getElementLocator(), by.getElementLocator()));
+                            "'<package_name>:id/%1$s' format.", locator));
         }
         return String.format("%s:id/%s", packageName, locator);
-    }
-
-    private static Set<Attribute> extractQueriedAttributes(String xpathExpression) {
-        if (xpathExpression.contains("@*")) {
-            return new HashSet<>(Arrays.asList(UiElementSnapshot.SUPPORTED_ATTRIBUTES));
-        }
-
-        return Arrays.stream(Attribute.values())
-                .filter(attr -> xpathExpression.contains("@" + attr.toString()))
-                .collect(Collectors.toSet());
     }
 
     public static NodeInfoList getXPathNodeMatch(
@@ -141,8 +119,7 @@ public class ElementLocationHelpers {
         resetAccessibilityCache();
 
         if (by instanceof By.ById) {
-            String locator = rewriteIdLocator((By.ById) by);
-            return CustomUiDevice.getInstance().findObject(androidx.test.uiautomator.By.res(locator));
+            return findElementById((By.ById) by, null);
         } else if (by instanceof By.ByAccessibilityId) {
             return CustomUiDevice.getInstance().findObject(androidx.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
@@ -165,8 +142,7 @@ public class ElementLocationHelpers {
     @Nullable
     public static AccessibleUiObject findElement(By by, AndroidElement context) throws UiObjectNotFoundException {
         if (by instanceof By.ById) {
-            String locator = rewriteIdLocator((By.ById) by);
-            return context.getChild(androidx.test.uiautomator.By.res(locator));
+            return findElementById((By.ById) by, context);
         } else if (by instanceof By.ByAccessibilityId) {
             return context.getChild(androidx.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
@@ -190,8 +166,7 @@ public class ElementLocationHelpers {
         resetAccessibilityCache();
 
         if (by instanceof By.ById) {
-            String locator = rewriteIdLocator((By.ById) by);
-            return CustomUiDevice.getInstance().findObjects(androidx.test.uiautomator.By.res(locator));
+            return findElementsById((By.ById) by, null);
         } else if (by instanceof By.ByAccessibilityId) {
             return CustomUiDevice.getInstance().findObjects(androidx.test.uiautomator.By.desc(by.getElementLocator()));
         } else if (by instanceof By.ByClass) {
@@ -212,8 +187,7 @@ public class ElementLocationHelpers {
 
     public static List<AccessibleUiObject> findElements(By by, AndroidElement context) {
         if (by instanceof By.ById) {
-            String locator = rewriteIdLocator((By.ById) by);
-            return context.getChildren(androidx.test.uiautomator.By.res(locator), by);
+            return findElementsById((By.ById) by, context);
         } else if (by instanceof By.ByAccessibilityId) {
             return context.getChildren(androidx.test.uiautomator.By.desc(by.getElementLocator()), by);
         } else if (by instanceof By.ByClass) {
@@ -230,5 +204,118 @@ public class ElementLocationHelpers {
         throw new NotImplementedException(
                 String.format("%s locator is not supported", by.getClass().getSimpleName())
         );
+    }
+
+    @Nullable
+    private static String getPackageName() {
+        String pkg = AppiumUIA2Driver.getInstance()
+                .getSessionOrThrow()
+                .getCapability("appPackage", "");
+        if (isBlank(pkg)) {
+            pkg = CustomUiDevice.getInstance().getInstrumentation()
+                    .getTargetContext()
+                    .getPackageName();
+        }
+        return isBlank(pkg) ? null : pkg;
+    }
+
+    /**
+     * Builds an XPath expression that matches nodes by {@code resource-id}, going through the
+     * same attribute computation as {@link Attribute#RESOURCE_ID} (see
+     * {@code AxNodeInfoHelper.getResourceId}), where a Compose {@code testTag} unconditionally
+     * takes precedence over the node's real {@code resource-id} when the
+     * {@link MapTestTagToResourceId} setting is enabled. Used to align {@code By.ById} lookups
+     * with that precedence, since the native {@code UiSelector}/{@code BySelector} id matcher
+     * only ever sees the real {@code resource-id}.
+     * <p>
+     * {@code rawLocator} is matched as-is to support Compose {@code testTag}s, which - unlike
+     * resource ids - are never package-qualified by {@link #rewriteIdLocator}.
+     * {@code rewrittenLocator} (the output of {@link #rewriteIdLocator}) is matched too, so
+     * package-autocompleted lookups of real resource ids keep working; it is only added when it
+     * differs from {@code rawLocator}.
+     */
+    static String resourceIdXPath(String rawLocator, String rewrittenLocator) {
+        String rawLiteral = toXPathStringLiteral(rawLocator);
+        return rawLocator.equals(rewrittenLocator)
+                ? String.format(".//*[@resource-id=%s]", rawLiteral)
+                : String.format(".//*[@resource-id=%s or @resource-id=%s]",
+                        rawLiteral, toXPathStringLiteral(rewrittenLocator));
+    }
+
+    /**
+     * Builds an XPath 1.0 string literal for the given value. XPath 1.0 has no escape
+     * mechanism for quote characters, so the value is wrapped in whichever quote character
+     * it does not contain; if it contains both, {@code concat()} is used to splice it back
+     * together around single-quote boundaries.
+     */
+    static String toXPathStringLiteral(String value) {
+        if (!value.contains("'")) {
+            return "'" + value + "'";
+        }
+        if (!value.contains("\"")) {
+            return "\"" + value + "\"";
+        }
+        String[] parts = value.split("'", -1);
+        StringBuilder result = new StringBuilder("concat(");
+        for (int i = 0; i < parts.length; i++) {
+            if (i > 0) {
+                result.append(", \"'\", ");
+            }
+            result.append('\'').append(parts[i]).append('\'');
+        }
+        return result.append(')').toString();
+    }
+
+    private static Set<Attribute> extractQueriedAttributes(String xpathExpression) {
+        if (xpathExpression.contains("@*")) {
+            return new HashSet<>(Arrays.asList(UiElementSnapshot.SUPPORTED_ATTRIBUTES));
+        }
+
+        return Arrays.stream(Attribute.values())
+                .filter(attr -> xpathExpression.contains("@" + attr.toString()))
+                .collect(Collectors.toSet());
+    }
+
+    /**
+     * Shared {@code By.ById} handling for both {@link #findElement} overloads: rewrites the
+     * locator, and - if {@link MapTestTagToResourceId} is enabled - resolves it via the
+     * testTag-aware XPath lookup, throwing {@link ElementNotFoundException} on no match, exactly
+     * like the {@code By.ByXPath} branches. Otherwise falls back to the native id matcher,
+     * scoped to {@code context} when given.
+     */
+    @Nullable
+    private static AccessibleUiObject findElementById(
+            By.ById by, @Nullable AndroidElement context) throws UiObjectNotFoundException {
+        String locator = rewriteIdLocator(by);
+        if (Settings.get(MapTestTagToResourceId.class).getValue()) {
+            final NodeInfoList matchedNodes = getXPathNodeMatch(
+                    resourceIdXPath(by.getElementLocator(), locator), context, false);
+            if (matchedNodes.isEmpty()) {
+                throw new ElementNotFoundException();
+            }
+            return CustomUiDevice.getInstance().findObject(matchedNodes);
+        }
+        return context == null
+                ? CustomUiDevice.getInstance().findObject(androidx.test.uiautomator.By.res(locator))
+                : context.getChild(androidx.test.uiautomator.By.res(locator));
+    }
+
+    /**
+     * Shared {@code By.ById} handling for both {@link #findElements} overloads. See
+     * {@link #findElementById} for the resolution logic; the only difference is that an empty
+     * match yields an empty list rather than throwing, matching the {@code By.ByXPath} branches.
+     */
+    private static List<AccessibleUiObject> findElementsById(By.ById by, @Nullable AndroidElement context) {
+        String locator = rewriteIdLocator(by);
+        if (Settings.get(MapTestTagToResourceId.class).getValue()) {
+            final NodeInfoList matchedNodes = getXPathNodeMatch(
+                    resourceIdXPath(by.getElementLocator(), locator), context, true);
+            return matchedNodes.isEmpty()
+                    ? Collections.<AccessibleUiObject>emptyList()
+                    : CustomUiDevice.getInstance().findObjects(matchedNodes);
+        }
+        return context == null
+                ? CustomUiDevice.getInstance().findObjects(androidx.test.uiautomator.By.res(locator))
+                : context.getChildren(androidx.test.uiautomator.By.res(locator), by);
     }
 }
