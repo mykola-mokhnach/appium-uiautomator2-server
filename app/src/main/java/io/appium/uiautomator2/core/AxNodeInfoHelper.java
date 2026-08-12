@@ -31,12 +31,15 @@ import androidx.annotation.Nullable;
 import androidx.test.uiautomator.Direction;
 
 import io.appium.uiautomator2.common.exceptions.InvalidElementStateException;
+import io.appium.uiautomator2.model.CollectionInfo;
+import io.appium.uiautomator2.model.CollectionItemInfo;
 import io.appium.uiautomator2.model.internal.CustomUiDevice;
 import io.appium.uiautomator2.model.internal.GestureController;
 import io.appium.uiautomator2.model.settings.Settings;
 import io.appium.uiautomator2.model.settings.SimpleBoundsCalculation;
 import io.appium.uiautomator2.model.settings.SnapshotMaxDepth;
 import io.appium.uiautomator2.utils.Logger;
+import io.appium.uiautomator2.utils.ModelUtils;
 
 import static io.appium.uiautomator2.utils.ReflectionUtils.getField;
 import static io.appium.uiautomator2.utils.StringHelpers.charSequenceToNullableString;
@@ -97,6 +100,26 @@ public class AxNodeInfoHelper {
 
     public static boolean isVisible(@Nullable AccessibilityNodeInfo nodeInfo) {
         return nodeInfo != null && nodeInfo.isVisibleToUser();
+    }
+
+    public static boolean isCollection(@Nullable AccessibilityNodeInfo nodeInfo) {
+        return nodeInfo != null && nodeInfo.getCollectionInfo() != null;
+    }
+
+    public static boolean isCollectionItem(@Nullable AccessibilityNodeInfo nodeInfo) {
+        return nodeInfo != null && nodeInfo.getCollectionItemInfo() != null;
+    }
+
+    @Nullable
+    public static String getCollectionInfoAsString(@Nullable AccessibilityNodeInfo nodeInfo) {
+        CollectionInfo info = CollectionInfo.from(nodeInfo);
+        return info == null ? null : ModelUtils.toJsonString(info, false);
+    }
+
+    @Nullable
+    public static String getCollectionItemInfoAsString(@Nullable AccessibilityNodeInfo nodeInfo) {
+        CollectionItemInfo info = CollectionItemInfo.from(nodeInfo);
+        return info == null ? null : ModelUtils.toJsonString(info, false);
     }
 
     @Nullable
