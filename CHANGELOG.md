@@ -1,3 +1,9 @@
+## [10.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v10.6.0...v10.6.1) (2026-08-13)
+
+### Bug Fixes
+
+* use testTag-aware By.ById resolution in ElementsCache.restore ([#792](https://github.com/appium/appium-uiautomator2-server/issues/792)) ([4523d8a](https://github.com/appium/appium-uiautomator2-server/commit/4523d8ac2f74e3f13ebef985fffa6b6e5af159a0))
+
 ## [10.6.0](https://github.com/appium/appium-uiautomator2-server/compare/v10.5.0...v10.6.0) (2026-08-12)
 
 ### Features
