@@ -1,3 +1,9 @@
+## [10.6.2](https://github.com/appium/appium-uiautomator2-server/compare/v10.6.1...v10.6.2) (2026-08-14)
+
+### Bug Fixes
+
+* resolve foreground activity for declared orientation reliably ([#793](https://github.com/appium/appium-uiautomator2-server/issues/793)) ([671c967](https://github.com/appium/appium-uiautomator2-server/commit/671c9675b0c9f9795b050cf46f7fc9e185182a92))
+
 ## [10.6.1](https://github.com/appium/appium-uiautomator2-server/compare/v10.6.0...v10.6.1) (2026-08-13)
 
 ### Bug Fixes
